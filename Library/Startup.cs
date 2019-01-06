@@ -9,6 +9,7 @@ using Library.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,7 @@ namespace Library
             services.AddMvc(setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true;//evita enviar formato padrão quando formato específico é pedido e não está disponível
-                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());//add nuget (Microsoft.AspNetCore.Mvc.Formatters.xml)
+                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());//add nuget (Microsoft.AspNetCore.Mvc.Formatters.xml) na versão 2.1
             });
 
             var connectionString = Startup.Configuration["connectionStrings:MyconnStr"];
