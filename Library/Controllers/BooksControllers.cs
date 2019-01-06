@@ -1,4 +1,6 @@
-﻿using Library.API.Services;
+﻿using AutoMapper;
+using Library.API.Models;
+using Library.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Library.Controllers
 {
-    [Route("api/author")]
+    [Route("api/authors/{authorID}/books")]
     public class BooksControllers : Controller
     {
         private ILibraryRepository _libRepository;
@@ -18,12 +20,47 @@ namespace Library.Controllers
             _libRepository = libRepository;
         }
 
-        [HttpGet("{author}/books")]
-        public IActionResult GetBooks(Guid author)
+        [HttpGet()]
+        public IActionResult GetBooksForAuthor(Guid authorId)
         {
-            var books = _libRepository.GetBooksForAuthor(author);
 
-            return Ok(books);
+            if (!_libRepository.AuthorExists(authorId))
+            {
+                return NotFound();
+            }
+
+            var booksForAuthorFromRepo = _libRepository.GetBooksForAuthor(authorId);
+
+            //if (books == null)
+            //{
+            //    return NotFound();
+            //}
+
+            var booksForAuthor = Mapper.Map<IEnumerable<BookDto>>(booksForAuthorFromRepo);
+
+            return Ok(booksForAuthor);
+
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetBookForAuthor(Guid authorId, Guid id)
+        {
+
+            if (!_libRepository.AuthorExists(authorId))
+            {
+                return NotFound();
+            }
+
+            var bookForAuthorFromRepo = _libRepository.GetBookForAuthor(authorId, id);
+
+            if (bookForAuthorFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var bookForAuthor = Mapper.Map<BookDto>(bookForAuthorFromRepo);
+
+            return Ok(bookForAuthor);
 
         }
     }

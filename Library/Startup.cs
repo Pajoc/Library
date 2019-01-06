@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Library
 {
-    
+
     public class Startup
     {
         public static IConfiguration Configuration { get; private set; }
@@ -24,12 +24,16 @@ namespace Library
         {
             Configuration = configuration;
         }
-               
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc(setupAction =>
+            {
+                setupAction.ReturnHttpNotAcceptable = true;//evita enviar formato padrão quando formato específico é pedido e não está disponível
+                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());//add nuget (Microsoft.AspNetCore.Mvc.Formatters.xml)
+            });
 
             var connectionString = Startup.Configuration["connectionStrings:MyconnStr"];
             services.AddDbContext<LibraryContext>(o => o.UseSqlServer(connectionString));//por defeito scopped
@@ -44,6 +48,18 @@ namespace Library
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {   //Global exception handling
+                app.UseExceptionHandler(appBuilder =>
+                {
+                    appBuilder.Run(async context =>
+                    {
+                        context.Response.StatusCode = 500;
+                        await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
+                    });
+                });
+            }
+
 
             AutoMapper.Mapper.Initialize(cfg =>
             {
@@ -52,6 +68,8 @@ namespace Library
                 $"{src.FirstName} {src.LastName}"))
                 .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
                 src.DateOfBirth.GetCurrentAge()));
+
+                cfg.CreateMap<Book, BookDto>();
             });
 
             //libraryContext.EnsureSeedDataForContext();

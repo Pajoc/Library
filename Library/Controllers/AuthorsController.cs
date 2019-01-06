@@ -30,5 +30,23 @@ namespace Library.Controllers
             return Ok(authors);
 
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetAuthor(Guid id)
+        {
+           // throw new Exception("Random exception");
+
+            var authorFromRepo = _libRepository.GetAuthor(id);
+
+            if (authorFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var authors = Mapper.Map<AuthorDto>(authorFromRepo);
+
+            return Ok(authors);
+
+        }
     }
 }
