@@ -73,9 +73,11 @@ namespace Library
                 cfg.CreateMap<Book, BookDto>();
 
                 cfg.CreateMap<Models.AuthorForCreationDto, Author>();
+
+                cfg.CreateMap<Models.BookForCreationDto, Book>();
             });
 
-            //libraryContext.EnsureSeedDataForContext();
+            libraryContext.EnsureSeedDataForContext();
 
             app.UseStatusCodePages();
             app.UseMvc();
