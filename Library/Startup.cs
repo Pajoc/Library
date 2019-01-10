@@ -34,6 +34,7 @@ namespace Library
             {
                 setupAction.ReturnHttpNotAcceptable = true;//evita enviar formato padrão quando formato específico é pedido e não está disponível
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());//add nuget (Microsoft.AspNetCore.Mvc.Formatters.xml) na versão 2.1
+                setupAction.InputFormatters.Add(new XmlDataContractSerializerInputFormatter());
             });
 
             var connectionString = Startup.Configuration["connectionStrings:MyconnStr"];

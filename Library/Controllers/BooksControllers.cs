@@ -92,5 +92,33 @@ namespace Library.Controllers
             var bookToReturn = Mapper.Map<BookDto>(bookEntity);
             return CreatedAtRoute("GetBookForAuthor", new { authorId, id= bookToReturn.Id }, bookToReturn);
         }
+
+        [HttpDelete ("{id}")]
+        public IActionResult DeleteBookForAuthor(Guid authorId, Guid id)
+        {
+            if (!_libRepository.AuthorExists(authorId))
+            {
+                return NotFound();
+            }
+
+            var bookForAuthorFromRepo = _libRepository.GetBookForAuthor(authorId, id);
+
+            if (bookForAuthorFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            _libRepository.DeleteBook(bookForAuthorFromRepo);
+
+            if (!_libRepository.Save())
+            {
+                throw new Exception($"Removing a book for author {authorId} failed.");
+            }
+
+            return NoContent();
+
+        }
+
+        
     }
 }
