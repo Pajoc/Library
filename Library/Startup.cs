@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,6 +76,8 @@ namespace Library
                 cfg.CreateMap<Models.AuthorForCreationDto, Author>();
 
                 cfg.CreateMap<Models.BookForCreationDto, Book>();
+
+                cfg.CreateMap<Models.BookForUpdateDto, Book>();
             });
 
             libraryContext.EnsureSeedDataForContext();
