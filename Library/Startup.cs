@@ -6,6 +6,7 @@ using Library.API.Entities;
 using Library.API.Helpers;
 using Library.API.Models;
 using Library.API.Services;
+using Library.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -78,6 +79,9 @@ namespace Library
                 cfg.CreateMap<Models.BookForCreationDto, Book>();
 
                 cfg.CreateMap<Models.BookForUpdateDto, Book>();
+
+                cfg.CreateMap<Book, BookForUpdateDto>();
+
             });
 
             libraryContext.EnsureSeedDataForContext();
