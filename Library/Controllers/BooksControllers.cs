@@ -76,6 +76,17 @@ namespace Library.Controllers
                 return BadRequest();
             }
 
+            if (book.Description == book.Title)
+            {
+                ModelState.AddModelError(nameof(BookForCreationDto),"The provided description should be diferent from the title.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // unprocessable 422
+                return new UnprocessableEntityObjectResult(ModelState);
+            }
+
             if (!_libRepository.AuthorExists(authorId))
             {
                 return NotFound();
