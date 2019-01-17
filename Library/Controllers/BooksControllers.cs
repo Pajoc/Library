@@ -5,6 +5,7 @@ using Library.API.Services;
 using Library.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,13 @@ namespace Library.Controllers
     public class BooksControllers : Controller
     {
         private ILibraryRepository _libRepository;
+        private ILogger<BooksControllers> _logger;
 
-        public BooksControllers(ILibraryRepository libRepository)
+        //o logger pode ser criado com o logger factory ou injetado num construtor
+        public BooksControllers(ILibraryRepository libRepository, ILogger<BooksControllers> logger)
         {
             _libRepository = libRepository;
+            _logger = logger;
         }
 
         [HttpGet()]
@@ -127,6 +131,7 @@ namespace Library.Controllers
                 throw new Exception($"Removing a book for author {authorId} failed.");
             }
 
+            _logger.LogInformation(100, $"Book for author {authorId} removed.");
             return NoContent();
 
         }

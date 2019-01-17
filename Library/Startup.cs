@@ -8,6 +8,7 @@ using Library.API.Models;
 using Library.API.Services;
 using Library.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -40,7 +41,7 @@ namespace Library
             });
 
             var connectionString = Startup.Configuration["connectionStrings:MyconnStr"];
-            services.AddDbContext<LibraryContext>(o => o.UseSqlServer(connectionString));//por defeito scopped
+            services.AddDbContext<LibraryContext>(o => { o.UseSqlServer(connectionString,op => { op.UseRowNumberForPaging(); }); });//por defeito scopped
 
             services.AddScoped<ILibraryRepository, LibraryRepository>();
         }
@@ -48,7 +49,7 @@ namespace Library
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,ILoggerFactory loggerFactory, LibraryContext libraryContext)
         {
-            loggerFactory.AddConsole();
+            loggerFactory.AddDebug(LogLevel.Information);
 
             if (env.IsDevelopment())
             {
@@ -60,6 +61,13 @@ namespace Library
                 {
                     appBuilder.Run(async context =>
                     {
+                        //para conseguir apanhar o erro antes de enviar a mensagem de erro genérica
+                        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+                        if (exceptionHandlerFeature != null)
+                        {
+                            var logger = loggerFactory.CreateLogger("Global exception logger");
+                            logger.LogError(500, exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
+                        }
                         context.Response.StatusCode = 500;
                         await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
                     });
