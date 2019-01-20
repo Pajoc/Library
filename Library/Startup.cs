@@ -41,7 +41,12 @@ namespace Library
             });
 
             var connectionString = Startup.Configuration["connectionStrings:MyconnStr"];
-            services.AddDbContext<LibraryContext>(o => { o.UseSqlServer(connectionString,op => { op.UseRowNumberForPaging(); }); });//por defeito scopped
+            services.AddDbContext<LibraryContext>(o => {
+                                                        o.UseSqlServer(connectionString,op => 
+                                                        {
+                                                            op.UseRowNumberForPaging();
+                                                        });
+                                                 });//por defeito scopped
 
             services.AddScoped<ILibraryRepository, LibraryRepository>();
         }
