@@ -20,7 +20,7 @@ namespace Library.Helpers
         {
             get
             {
-                return (CurrentPage < TotalPages);
+                return (CurrentPage > 1);
             }
         }
 
@@ -38,6 +38,7 @@ namespace Library.Helpers
             PageSize = pageSize;
             CurrentPage = pageNumber;
             TotalPages = (int)Math.Ceiling(count / (double)PageSize);
+            AddRange(items);
         }
 
         public static PageList<T> Create (IQueryable<T> source, int pageNumber, int PageSize)
