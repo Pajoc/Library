@@ -39,6 +39,7 @@ namespace Library.Helpers
             CurrentPage = pageNumber;
             TotalPages = (int)Math.Ceiling(count / (double)PageSize);
             AddRange(items);
+            
         }
 
         public static PageList<T> Create (IQueryable<T> source, int pageNumber, int PageSize)
