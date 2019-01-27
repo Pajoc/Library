@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Folder Include="Entities\" />
-    <Folder Include="Services\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -20,6 +19,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9.2" />
   </ItemGroup>
 
 </Project>
