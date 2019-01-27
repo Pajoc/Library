@@ -76,6 +76,7 @@ namespace Library.API.Services
             //  .OrderBy(a => a.FirstName)
             //  .OrderBy(a => a.LastName).AsQueryable();
 
+
             //Com dynamic Linq
             var collectionBeforePaging = _context.Authors.ApplySort(authorsResourceParameters.OrderBy,
                 _propertyMappingService.GetPropertyMapping<AuthorDto, Author>());
