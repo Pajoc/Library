@@ -4,6 +4,7 @@ using Library.API.Models;
 using Library.API.Services;
 using Library.Helpers;
 using Library.Models;
+using Library.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,17 +20,26 @@ namespace Library.Controllers
     {
         private ILibraryRepository _libRepository;
         private IUrlHelper _urlHelper;
+        private IPropertyMappingService _propertyMappingService;
 
         public AuthorsController(ILibraryRepository libRepository,
-            IUrlHelper urlHelper)
+            IUrlHelper urlHelper,
+            IPropertyMappingService propertyMappingService)
         {
             _libRepository = libRepository;
             _urlHelper = urlHelper;
+            _propertyMappingService = propertyMappingService;
         }
 
         [HttpGet(Name = "GetAuthors")]
         public IActionResult GetAuthors(AuthorsResourceParameters authorsResourceParameters)
         {
+
+            if (!_propertyMappingService.ValidMappingExistsFor<AuthorDto,Author>(authorsResourceParameters.OrderBy))
+            {
+                return BadRequest();
+            }
+
             var authorsFromRepo = _libRepository.GetAuthors(authorsResourceParameters);
 
             var previousPageLink = authorsFromRepo.HasPrevious ?

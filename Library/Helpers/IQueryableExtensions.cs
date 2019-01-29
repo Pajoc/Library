@@ -58,7 +58,7 @@ namespace Library.Helpers
                 }
 
                 //senão order by fica ao contrário
-                foreach ( var destinationProperty in propertyMappingValue.DestinationProperties.Reverse())
+                foreach (var destinationProperty in propertyMappingValue.DestinationProperties.Reverse())
                 {
                     //revert sort if necessary
                     if (propertyMappingValue.Revert)
@@ -72,5 +72,6 @@ namespace Library.Helpers
             return source;
 
         }
+
     }
 }
