@@ -120,9 +120,12 @@ namespace Library.Controllers
         }
 
         [HttpGet("{id}", Name = "GetAuthor")]
-        public IActionResult GetAuthor(Guid id)
+        public IActionResult GetAuthor(Guid id, [FromQuery] string fields)
         {
-            // throw new Exception("Random exception");
+           if (!_typeHelperService.TypeHasProperties<AuthorDto>(fields))
+            {
+                return BadRequest();
+            }
 
             var authorFromRepo = _libRepository.GetAuthor(id);
 
@@ -133,7 +136,7 @@ namespace Library.Controllers
 
             var authors = Mapper.Map<AuthorDto>(authorFromRepo);
 
-            return Ok(authors);
+            return Ok(authors.ShapeData(fields));
 
         }
 
