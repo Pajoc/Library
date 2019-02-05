@@ -19,12 +19,14 @@ namespace Library.Controllers
     {
         private ILibraryRepository _libRepository;
         private ILogger<BooksControllers> _logger;
+        private IUrlHelper _urlHelper;
 
         //o logger pode ser criado com o logger factory ou injetado num construtor
-        public BooksControllers(ILibraryRepository libRepository, ILogger<BooksControllers> logger)
+        public BooksControllers(ILibraryRepository libRepository, ILogger<BooksControllers> logger, IUrlHelper urlHelper)
         {
             _libRepository = libRepository;
             _logger = logger;
+            _urlHelper = urlHelper;
         }
 
         [HttpGet()]
@@ -44,6 +46,17 @@ namespace Library.Controllers
             //}
 
             var booksForAuthor = Mapper.Map<IEnumerable<BookDto>>(booksForAuthorFromRepo);
+
+            //foreach (var book in booksForAuthor)
+            //{
+            //    CreateLinksForBook(book);
+            //}
+
+            booksForAuthor = booksForAuthor.Select(book =>
+            {
+                book = CreateLinksForBook(book);
+                return book;
+            });
 
             return Ok(booksForAuthor);
 
@@ -67,7 +80,7 @@ namespace Library.Controllers
 
             var bookForAuthor = Mapper.Map<BookDto>(bookForAuthorFromRepo);
 
-            return Ok(bookForAuthor);
+            return Ok(CreateLinksForBook(bookForAuthor));
 
         }
 
@@ -106,10 +119,10 @@ namespace Library.Controllers
             }
 
             var bookToReturn = Mapper.Map<BookDto>(bookEntity);
-            return CreatedAtRoute("GetBookForAuthor", new { authorId, id= bookToReturn.Id }, bookToReturn);
+            return CreatedAtRoute("GetBookForAuthor", new { authorId, id= bookToReturn.Id }, CreateLinksForBook(bookToReturn));
         }
 
-        [HttpDelete ("{id}")]
+        [HttpDelete ("{id}", Name = "DeleteBookForAuthor")]
         public IActionResult DeleteBookForAuthor(Guid authorId, Guid id)
         {
             if (!_libRepository.AuthorExists(authorId))
@@ -136,7 +149,7 @@ namespace Library.Controllers
 
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdateBookForAuthor")]
         public IActionResult UpdateBookForAuthor(Guid authorId, Guid id, [FromBody] BookForUpdateDto book)
         {
             if (book == null)
@@ -193,7 +206,7 @@ namespace Library.Controllers
         }
 
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}", Name = "PartiallyUpdateBookForAuthor")]
         public IActionResult PartiallyUpdateBookForAuthor(Guid authorId, Guid id,
             [FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc)
         {
@@ -270,6 +283,21 @@ namespace Library.Controllers
 
             return NoContent();
 
+        }
+
+        private BookDto CreateLinksForBook(BookDto book)
+        {
+            //São as operações que se pode fazer sobre cada livro de forma individual
+            //deve ser realizado sempre que um BookDto é devolvido
+            book.Links.Add(new LinkDto(_urlHelper.Link("GetBookForAuthor", new { id = book.Id }), "self", "GET"));
+            book.Links.Add(
+                new LinkDto(_urlHelper.Link("DeleteBookForAuthor",
+                new { id = book.Id }),
+                "delete_book",
+                "DELETE"));
+            book.Links.Add(new LinkDto(_urlHelper.Link("UpdateBookForAuthor", new { id = book.Id }), "update_book", "PUT"));
+            book.Links.Add(new LinkDto(_urlHelper.Link("PartiallyUpdateBookForAuthor", new { id = book.Id }), "partially_update_book", "PATCH"));
+            return book;
         }
     }
 }
