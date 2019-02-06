@@ -29,7 +29,7 @@ namespace Library.Controllers
             _urlHelper = urlHelper;
         }
 
-        [HttpGet()]
+        [HttpGet(Name = "GetBooksForAuthor")]
         public IActionResult GetBooksForAuthor(Guid authorId)
         {
 
@@ -58,8 +58,10 @@ namespace Library.Controllers
                 return book;
             });
 
-            return Ok(booksForAuthor);
+            var wrapper = new LinkedCollectionResourceWrapperDto<BookDto>(booksForAuthor);
 
+            return Ok(CreateLinksForBooks(wrapper));
+            
         }
 
         [HttpGet("{id}", Name = "GetBookForAuthor")]
@@ -298,6 +300,17 @@ namespace Library.Controllers
             book.Links.Add(new LinkDto(_urlHelper.Link("UpdateBookForAuthor", new { id = book.Id }), "update_book", "PUT"));
             book.Links.Add(new LinkDto(_urlHelper.Link("PartiallyUpdateBookForAuthor", new { id = book.Id }), "partially_update_book", "PATCH"));
             return book;
+        }
+
+        private LinkedCollectionResourceWrapperDto<BookDto> CreateLinksForBooks(
+            LinkedCollectionResourceWrapperDto<BookDto> booksWrapper)
+        {
+
+            booksWrapper.Links.Add(new LinkDto(_urlHelper.Link("GetBooksForAuthor", new { }),
+                "self",
+                "Get"));
+
+            return booksWrapper;
         }
     }
 }
