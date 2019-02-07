@@ -86,7 +86,7 @@ namespace Library.Controllers
 
         }
 
-        [HttpPost()]
+        [HttpPost(Name = "CreateBookForAuthor")]
 
         public IActionResult CreateBookForAuthor(Guid authorId, [FromBody] BookForCreationDto book)
         {
